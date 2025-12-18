@@ -1,6 +1,12 @@
 # 🏈 Reproducible Rivalry: Quantifying UGA–Alabama Football Intensity
 
+<div align="center">
+  <img src="https://ats.io/wp-content/uploads/2025/09/alabama-vs-georgia-prediction-and-preview.png" width="760" />
+  <br />
+</div>
+
 ## Overview
+
 This project builds a reproducible analytics pipeline to quantify rivalry intensity in the historic University of Georgia vs. University of Alabama football matchup. Using officially sourced game statistics, I introduce a custom **Rivalry Intensity Index (RII)** that captures not only final scores, but also competitive pressure, offensive production, turnovers, and game stakes.
 
 The project begins with a focused analysis of recent matchups and is designed to scale to a broader historical dataset, enabling trend analysis across seasons and eras.
@@ -8,9 +14,12 @@ The project begins with a focused analysis of recent matchups and is designed to
 ---
 
 ## Motivation
-UGA and Alabama share one of the most competitive rivalries in college football, with frequent high-stakes matchups in SEC Championships and the College Football Playoff. With another SEC Championship matchup approaching, this project aims to move beyond wins and losses and answer a deeper question:
 
-**How intense are these games, and how has that intensity changed over time?**
+Being a Georgia Bulldawg means growing up with moments that are bigger than the scoreboard.
+UGA vs. Alabama is not just another matchup. It is where seasons are defined, legacies are questioned, and emotions swing with every possession.
+With another SEC Championship game approaching, I wanted to look beyond wins and losses and ask a deeper question:
+
+**How intense are these games, and how has that intensity evolved over time?**
 
 ---
 
@@ -21,7 +30,9 @@ All game data is sourced from **official University of Georgia Athletics records
   https://georgiadogs.com/sports/football/opponent-history/university-of-alabama/28
 
 This page documents every matchup between UGA and Alabama from **1895 to 2025**.  
-For the initial model, I curated a subset of recent games with detailed box-score statistics. The pipeline is designed to incorporate additional historical games as more data is added.
+
+This model was originally built ahead of the 2025 SEC Championship using a curated subset of recent games with detailed box-score statistics. Following the conclusion of the championship, the pipeline is designed to remain continuously updatable, allowing newly played games and additional historical matchups to be seamlessly incorporated.
+The goal is not a static snapshot, but a living model that evolves as this rivalry continues to be written.
 
 ---
 
@@ -71,6 +82,7 @@ The analysis pipeline follows a standard data science workflow:
 6. Visualize rivalry intensity trends over time  
 
 All steps are implemented in Python using `pandas` and `matplotlib`.
+
 
 ---
 
@@ -150,19 +162,3 @@ This project was developed as an independent analytics exploration of college fo
 
 
 ---
-
-### ✅ What to do now
-1. Go to your GitHub repo  
-2. Open `README.md`  
-3. **Paste everything above**  
-4. Commit  
-
-It will render **exactly** as intended.
-
-If you want, next I can:
-- tailor a **shorter public-facing README** vs an **academic version**
-- add **badges**, screenshots, or charts
-- help you write a **“Key Insights”** section once you add more data
-- polish this for **grad admissions reviewers**
-
-Just tell me the next step.
