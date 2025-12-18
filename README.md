@@ -83,6 +83,80 @@ The analysis pipeline follows a standard data science workflow:
 
 All steps are implemented in Python using `pandas` and `matplotlib`.
 
+## Model Overview & Methodology
+
+This project introduces a custom **Rivalry Intensity Index (RII)** designed to quantify the competitive and emotional intensity of the historic UGA–Alabama football rivalry.
+
+Rather than relying solely on wins and losses, the model focuses on **how the game was played**, capturing multiple dimensions that collectively reflect rivalry intensity.
+
+### Core Components
+
+For each game, the Rivalry Intensity Index is computed as a weighted combination of four factors:
+
+1. **Score Closeness**  
+   Measures how competitive the game was based on the final score margin. Games decided by smaller margins contribute more heavily to rivalry intensity.
+
+2. **Offensive Production**  
+   Captures the total offensive yards accumulated by both teams, reflecting pace, momentum swings, and sustained pressure throughout the game.
+
+3. **Turnover Impact**  
+   Accounts for turnovers committed by both teams. Turnovers introduce volatility and frequently shift momentum, amplifying emotional stakes.
+
+4. **Championship Pressure Adjustment**  
+   Applies an additional weight to games played in high-stakes environments such as SEC Championships or College Football Playoff matchups.
+
+### Formal Definition
+
+Let:
+
+- ΔS = absolute score difference  
+- Y = total offensive yards (UGA + Alabama)  
+- T = total turnovers  
+- C = championship indicator (binary or scaled weight)
+
+The Rivalry Intensity Index for a single game is defined as:
+
+$$
+\text{RII} = w_1 \cdot f(\Delta S) + w_2 \cdot Y + w_3 \cdot T + w_4 \cdot C
+$$
+
+Where:
+
+- \( f(\Delta S) \) is a score-closeness transformation that assigns higher values to tighter games  
+- \( w_1, w_2, w_3, w_4 \) are tunable weights calibrated to balance competitiveness, production, volatility, and stakes  
+
+The model is intentionally modular, allowing both weights and functional forms to be refined as additional historical data is incorporated.
+
+---
+
+## Example Results
+
+Below is a sample visualization generated from the initial model using a subset of recent UGA–Alabama matchups. The chart illustrates how rivalry intensity fluctuates across games, highlighting the influence of close finishes and championship pressure.
+
+<div align="center">
+  <img width="1540" height="880" alt="uga_bama_rivalry_index" src="https://github.com/user-attachments/assets/a24bd273-48d6-42db-ae91-af78854b9068" />
+
+  <br />
+  <em>Figure 1. Rivalry Intensity Index (RII) across selected UGA–Alabama matchups</em>
+</div>
+
+While this model was originally constructed ahead of the most recent SEC Championship, it is designed to remain continuously updatable as new games are played and additional historical matchups are added.
+
+---
+
+## How to Run This Project
+
+### Prerequisites
+
+- Python 3.9 or higher  
+- Required packages listed in `requirements.txt`
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+
+```
 
 ---
 
