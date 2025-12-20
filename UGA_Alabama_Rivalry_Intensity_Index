@@ -1,0 +1,162 @@
+"""
+UGA vs Alabama — Rivalry Intensity Index (RII)
+
+Dataset:
+All game statistics were sourced directly from the official University of Georgia Athletics website 
+(https://georgiadogs.com/sports/football/opponent-history/university-of-alabama/28),
+which documents every matchup between UGA and Alabama from 1895 to 2025.
+For this project, I selected the five most recent games to analyze.
+The timing is meaningful — UGA and Alabama meet again in SEC Championship (12/6), 
+making this rivalry especially relevant this week.
+
+The custom Rivalry Intensity Index (RII) combines:
+    - score closeness
+    - total offensive yards
+    - turnover chaos
+    - championship-game pressure
+"""
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+#load the 5 most recent UGA–Alabama games
+games_data = [
+    {
+        "season": 2021, "game_date": "2021-12-04", "game_type": "SEC Championship",
+        "uga_score": 24, "bama_score": 41,
+        "uga_total_yards": 449, "bama_total_yards": 536, "uga_turnovers": 2, "bama_turnovers": 0,
+    },
+    {
+        "season": 2021, "game_date": "2022-01-10", "game_type": "CFP National Championship",
+        "uga_score": 33, "bama_score": 18,
+        "uga_total_yards": 364, "bama_total_yards": 399, "uga_turnovers": 1, "bama_turnovers": 3,
+    },
+    {
+        "season": 2023, "game_date": "2023-12-02", "game_type": "SEC Championship",
+        "uga_score": 24, "bama_score": 27,
+        "uga_total_yards": 321, "bama_total_yards": 306, "uga_turnovers": 1, "bama_turnovers": 0,
+    },
+    {
+        "season": 2024, "game_date": "2024-09-28", "game_type": "Regular Season",
+        "uga_score": 34, "bama_score": 41,
+        "uga_total_yards": 385, "bama_total_yards": 419, "uga_turnovers": 4, "bama_turnovers": 1,
+    },
+    {
+        "season": 2025, "game_date": "2025-09-27", "game_type": "Regular Season",
+        "uga_score": 21, "bama_score": 24,
+        "uga_total_yards": 309, "bama_total_yards": 447, "uga_turnovers": 1, "bama_turnovers": 0,
+    },
+]
+
+raw_df = pd.DataFrame(games_data)
+raw_df.to_csv("uga_bama_stats.csv", index=False)
+
+
+#load the five most recent UGA–Alabama games
+games = pd.read_csv("uga_bama_stats.csv", parse_dates=["game_date"])
+games["game_type"] = games["game_type"].astype("category")
+
+
+#read the dataset back in and clean up the data types
+games["point_diff"] = games["uga_score"] - games["bama_score"]
+
+
+def compute_rivalry_index(row):
+    """
+    Thoughts:
+        - closer scores  -> higher intensity
+        - more total yards -> more fireworks
+        - more turnovers -> more chaos
+        - championship games -> extra pressure bonus
+    """
+    closeness = max(0, 40 - abs(row["point_diff"]))
+    offense = (row["uga_total_yards"] + row["bama_total_yards"]) * 0.02
+    chaos = (row["uga_turnovers"] + row["bama_turnovers"]) * 8
+    pressure = 20 if "Championship" in row["game_type"] else 0
+    return closeness + offense + chaos + pressure
+
+#calculate the RII for each game using the function above
+games["rivalry_index"] = games.apply(compute_rivalry_index, axis=1)
+
+
+#write a small helper function that identifies the highest-intensity game
+def most_intense_game(df: pd.DataFrame) -> pd.DataFrame:
+    """Return a one-row DataFrame for the game with the highest RII."""
+    max_idx = df["rivalry_index"].idxmax()
+    return df.loc[[max_idx]]
+
+
+intense_game = most_intense_game(games)
+
+
+#summarize average scores and RII by game type
+summary_by_type = (
+    games.groupby("game_type", observed=False)[["uga_score", "bama_score", "rivalry_index"]]
+    .mean()
+    .round(2)
+)
+
+
+#print the results to check the structure and outputs
+print("UGA vs Alabama games with Rivalry Intensity Index:\n")
+print(games[
+        [
+            "game_date", "game_type", "uga_score", "bama_score", "uga_total_yards", "bama_total_yards", "rivalry_index",
+        ]
+    ]
+)
+
+print("\nAverage metrics by game type:\n")
+print(summary_by_type)
+
+print("\nMost intense game (highest RII):\n")
+print(intense_game[
+        [
+            "game_date", "game_type", "uga_score", "bama_score", "uga_total_yards", "bama_total_yards", "rivalry_index",
+        ]
+    ]
+)
+
+
+#visualize how rivalry intensity changed across these five matchups
+labels = (
+    games["game_date"].dt.strftime("%Y-%m-%d")
+    + " ("
+    + games["game_type"].astype(str)
+    + ")"
+)
+
+plt.style.use("dark_background")
+plt.figure(figsize=(7,4))
+
+def label_row(row):
+    if row.season == 2021 and "SEC" in row.game_type:
+        return "2021 SEC"
+    if row.season == 2021 and "National" in row.game_type:
+        return "2021 NATTY"
+    return str(row.season)
+
+games["season_label"] = games.apply(label_row, axis=1)
+
+x = games["season_label"]
+y = games["rivalry_index"]
+
+plt.plot(
+    x, y,
+    color="#BA0C2F",  #this is uga bulldog red!
+    linewidth=2.5,
+    marker="o", markersize=7, markerfacecolor="#FFFFFF", markeredgecolor="#BA0C2F"
+)
+
+plt.xticks(x, x, fontsize=10, color="#FFFFFF")
+plt.ylabel("Rivalry Intensity Index", fontsize=11, color="#FFFFFF")
+plt.xlabel("Seasons", fontsize=11, color="#FFFFFF")
+plt.title("UGA vs Alabama Rivalry Intensity", fontsize=13, weight="bold")
+
+plt.grid(color="#9EA2A2", linestyle="--", linewidth=0.5, alpha=0.4)
+
+plt.tight_layout()
+plt.savefig("uga_bama_rivalry_index.png", dpi=220)
+plt.close()
